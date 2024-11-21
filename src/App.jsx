@@ -2,7 +2,7 @@
 import React from 'react';
 import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
+
 import StudentDashboard from './pages/student/StudentDashboard';
 import TeacherDashboard from './pages/teacher/TeacherDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -20,10 +20,7 @@ const router = createBrowserRouter(
       path: '/login',
       element: <LoginPage />,
     },
-    {
-      path: '/register',
-      element: <RegisterPage />,
-    },
+    
     // Rutas protegidas por rol
     {
       path: '/student/*',
