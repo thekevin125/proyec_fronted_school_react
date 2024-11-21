@@ -1,51 +1,54 @@
-import { useState } from 'react';
-import axios from 'axios';
+// src/pages/LoginPage.jsx
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
+  const handleLogin = async () => {
     try {
-      const response = await axios.post('http://localhost:4000/auth/login', {
-        email,
-        password,
+      const response = await fetch('https://backend-school-9ipd.onrender.com/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
       });
-      console.log('Login successful:', response.data);
+
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('user', JSON.stringify(data));
+
+        // Redirige según el rol
+        if (data.role === 'profesor') {
+          navigate('/teacher');
+        } else if (data.role === 'estudiante') {
+          navigate('/student');
+        }
+      } else {
+        alert('Credenciales incorrectas');
+      }
     } catch (error) {
-      console.error('Error logging in:', error.response.data);
+      console.error('Error al iniciar sesión:', error);
     }
   };
 
   return (
-    <div className="container mt-5">
-      <h2>Login</h2>
-      <form onSubmit={handleLogin}>
-        <div className="mb-3">
-          <label htmlFor="email" className="form-label">Email</label>
-          <input
-            type="email"
-            className="form-control"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <label htmlFor="password" className="form-label">Password</label>
-          <input
-            type="password"
-            className="form-control"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit" className="btn btn-primary">Login</button>
-      </form>
+    <div>
+      <h1>Iniciar Sesión</h1>
+      <input
+        type="email"
+        placeholder="Correo"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
+      <input
+        type="password"
+        placeholder="Contraseña"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
+      <button onClick={handleLogin}>Login</button>
     </div>
   );
 }
