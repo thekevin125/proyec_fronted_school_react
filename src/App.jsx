@@ -1,30 +1,54 @@
 // src/App.jsx
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
 import StudentDashboard from './pages/student/StudentDashboard';
 import TeacherDashboard from './pages/teacher/TeacherDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 
-function App() {
-  return (
-    <Router>
-      <Routes>
-        {/* Ruta de login */}
-        <Route path="/login" element={<LoginPage />} />
+// Definimos el router con las banderas futuras y una ruta por defecto
+const router = createBrowserRouter(
+  [
+    // Redirigir raíz ("/") a "/login"
+    {
+      path: '/',
+      element: <Navigate to="/login" />,
+    },
+    // Rutas de autenticación
+    {
+      path: '/login',
+      element: <LoginPage />,
+    },
+    {
+      path: '/register',
+      element: <RegisterPage />,
+    },
+    // Rutas protegidas por rol
+    {
+      path: '/student/*',
+      element: (
+        <ProtectedRoute role="estudiante" component={<StudentDashboard />} />
+      ),
+    },
+    {
+      path: '/teacher/*',
+      element: (
+        <ProtectedRoute role="profesor" component={<TeacherDashboard />} />
+      ),
+    },
+  ],
+  {
+    future: {
+      v7_relativeSplatPath: true, // Bandera para rutas splat
+      v7_skipActionErrorRevalidation: true, // Bandera para revalidación de errores
+      v7_startTransition: true, // Bandera para usar startTransition
+    },
+  }
+);
 
-        {/* Rutas protegidas por rol */}
-        <Route
-          path="/student/*"
-          element={<ProtectedRoute role="estudiante" component={<StudentDashboard />} />}
-        />
-        <Route
-          path="/teacher/*"
-          element={<ProtectedRoute role="profesor" component={<TeacherDashboard />} />}
-        />
-      </Routes>
-    </Router>
-  );
+function App() {
+  return <RouterProvider router={router} />;
 }
 
 export default App;
