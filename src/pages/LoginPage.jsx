@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import './../styles/index.css'; // Importamos los estilos
 
 function AuthPage() {
-  const [isLogin, setIsLogin] = useState(true); // Controlar si estamos en login o registro
+  const [isLogin, setIsLogin] = useState(true); // Controla si estamos en login o registro
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
@@ -13,46 +13,78 @@ function AuthPage() {
   const [successMessage, setSuccessMessage] = useState('');
   const navigate = useNavigate();
 
+  // Función para manejar el login aqui
   const handleLogin = async () => {
     if (!email || !password) {
       setErrorMessage('Por favor, ingresa tu correo y contraseña.');
       return;
     }
-
+  
     setIsLoading(true);
     setErrorMessage('');
     setSuccessMessage('');
-
+  
     try {
+      console.log('Intentando iniciar sesión con:', { email, password });
+  
       const response = await axios.post('https://backend-school-9ipd.onrender.com/auth/login', {
         email,
         password,
       });
-
+  
+      console.log('Respuesta del servidor:', response.data);
+  
       if (response.status === 200) {
+        const { access_token } = response.data;
+  
+        console.log('Token recibido:', access_token);
+  
+        // Decodificar el token para obtener el rol
+        const decodedToken = decodeToken(access_token);
+        console.log('Token decodificado:', decodedToken);
+  
+        const role = decodedToken.role; // Extraer el rol del token decodificado
+        console.log('Rol recibido:', role);
+  
+        // Guardar el token y el rol en localStorage
+        localStorage.setItem('access_token', access_token);
+        localStorage.setItem('role', role);
+  
         setSuccessMessage('Inicio de sesión exitoso');
-        localStorage.setItem('user', JSON.stringify(response.data));
-
+  
         // Redirige según el rol
-        if (response.data.role === 'profesor') {
-          navigate('/teacher');
-        } else if (response.data.role === 'estudiante') {
-          navigate('/student');
+        if (role === 'profesor') {
+          console.log('Redirigiendo a /teacher');
+          navigate('/teacher'); // Redirige al dashboard del profesor
+        } else if (role === 'estudiante') {
+          console.log('Redirigiendo a /student');
+          navigate('/student'); // Redirige al dashboard del estudiante
+        } else {
+          console.log('Rol no reconocido:', role);
+          setErrorMessage('Rol no reconocido.');
         }
       }
     } catch (error) {
+      console.log('Error durante el login:', error);
+  
       if (error.response) {
+        console.log('Error del servidor:', error.response.data);
         setErrorMessage(error.response.data.message || 'Error en el servidor');
       } else if (error.request) {
+        console.log('No se recibió respuesta del servidor:', error.request);
         setErrorMessage('Error al conectar con el servidor. Inténtalo más tarde.');
       } else {
+        console.log('Error al realizar la solicitud:', error.message);
         setErrorMessage('Error al realizar la solicitud.');
       }
     } finally {
       setIsLoading(false);
     }
   };
+  
 
+
+  // Función para manejar el registro
   const handleRegister = async () => {
     if (!email || !password || !name) {
       setErrorMessage('Por favor, completa todos los campos.');
@@ -62,6 +94,10 @@ function AuthPage() {
     setIsLoading(true);
     setErrorMessage('');
     setSuccessMessage('');
+
+
+
+    
 
     try {
       const response = await axios.post('https://backend-school-9ipd.onrender.com/users', {
@@ -73,8 +109,10 @@ function AuthPage() {
 
       if (response.status === 201) {
         setSuccessMessage('Registro exitoso');
-        // Aquí puedes redirigir o mostrar algo más
-        // navigate('/login');
+        // Redirigir a la página de login después de un registro exitoso
+        setTimeout(() => {
+          navigate('/login'); // Redirige a login
+        }, 1000);
       }
     } catch (error) {
       if (error.response) {
@@ -105,7 +143,7 @@ function AuthPage() {
             />
           </div>
         )}
-        
+
         <div>
           <input
             type="email"

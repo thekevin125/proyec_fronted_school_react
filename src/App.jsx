@@ -1,27 +1,21 @@
-// src/App.jsx
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
-
 import StudentDashboard from './pages/student/StudentDashboard';
 import TeacherDashboard from './pages/teacher/TeacherDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 
-// Definimos el router con las banderas futuras y una ruta por defecto
+// Definimos el router con las rutas principales
 const router = createBrowserRouter(
   [
-    // Redirigir raíz ("/") a "/login"
     {
       path: '/',
       element: <Navigate to="/login" />,
     },
-    // Rutas de autenticación
     {
       path: '/login',
       element: <LoginPage />,
     },
-    
-    // Rutas protegidas por rol
     {
       path: '/student/*',
       element: (
@@ -34,17 +28,24 @@ const router = createBrowserRouter(
         <ProtectedRoute role="profesor" component={<TeacherDashboard />} />
       ),
     },
-  ],
-  {
-    future: {
-      v7_relativeSplatPath: true, // Bandera para rutas splat
-      v7_skipActionErrorRevalidation: true, // Bandera para revalidación de errores
-      v7_startTransition: true, // Bandera para usar startTransition
+    {
+      path: '*',
+      element: <Navigate to="/login" />,
     },
-  }
+  ]
 );
 
 function App() {
+  const [userRole, setUserRole] = useState(null);
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user) {
+      setUserRole(user.role);
+    }
+  }, []);
+
+  // Devuelve el RouterProvider que maneja las rutas
   return <RouterProvider router={router} />;
 }
 
