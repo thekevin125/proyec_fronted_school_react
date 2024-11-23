@@ -46,11 +46,16 @@ function AuthPage() {
         const role = decodedToken.role; // Extraer el rol del token decodificado
         console.log('Rol recibido:', role);
   
-        // Guardar el token y el rol en localStorage
-        localStorage.setItem('access_token', access_token);
-        localStorage.setItem('role', role);
+        // Guardar el usuario (token y rol) completo en localStorage
+        localStorage.setItem('user', JSON.stringify({
+          access_token,
+          role,
+        }));
   
         setSuccessMessage('Inicio de sesión exitoso');
+  
+        // Añadir un console.log antes de la redirección
+        console.log('Redirigiendo a la ruta correspondiente según el rol:', role);
   
         // Redirigir según el rol
         if (role === 'profesor') {
@@ -80,6 +85,7 @@ function AuthPage() {
       setIsLoading(false);
     }
   };
+  
   
   
   
