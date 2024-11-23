@@ -12,79 +12,63 @@ function AuthPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const navigate = useNavigate();
+// Función para manejar el login aquí
+const handleLogin = async () => {
+  if (!email || !password) {
+    setErrorMessage('Por favor, ingresa tu correo y contraseña.');
+    return;
+  }
 
-  // Función para manejar el login aqui
-  const handleLogin = async () => {
-    if (!email || !password) {
-      setErrorMessage('Por favor, ingresa tu correo y contraseña.');
-      return;
-    }
-  
-    setIsLoading(true);
-    setErrorMessage('');
-    setSuccessMessage('');
-  
-    try {
-      console.log('Intentando iniciar sesión con:', { email, password });
-  
-      const response = await axios.post('https://backend-school-9ipd.onrender.com/auth/login', {
-        email,
-        password,
-      });
-  
-      // Verifica que la respuesta contenga los datos esperados
-      if (response && response.data && response.data.access_token) {
-        console.log('Respuesta del servidor:', response.data);
-        const { access_token } = response.data;
-  
-        console.log('Token recibido:', access_token);
-  
-        // Decodificar el token para obtener el rol
-        const decodedToken = JSON.parse(atob(access_token.split('.')[1]));
-        console.log('Token decodificado:', decodedToken);
-  
-        const role = decodedToken.role; // Extraer el rol del token decodificado
-        console.log('Rol recibido:', role);
-  
-        // Guardar el usuario (token y rol) completo en localStorage
-        localStorage.setItem('user', JSON.stringify({
-          access_token,
-          role,
-        }));
-  
-        setSuccessMessage('Inicio de sesión exitoso');
-  
-        // Añadir un console.log antes de la redirección
-        console.log('Redirigiendo a la ruta correspondiente según el rol:', role);
-  
-        // Redirigir según el rol
-        if (role === 'profesor') {
-          console.log('Redirigiendo a /teacher');
-          navigate('/teacher'); // Redirige al dashboard del profesor
-        } else if (role === 'estudiante') {
-          console.log('Redirigiendo a /student');
-          navigate('/student'); // Redirige al dashboard del estudiante
-        } else {
-          console.log('Rol no reconocido:', role);
-          setErrorMessage('Rol no reconocido.');
-        }
+  setIsLoading(true);
+  setErrorMessage('');
+  setSuccessMessage('');
+
+  try {
+    const response = await axios.post('https://backend-school-9ipd.onrender.com/auth/login', {
+      email,
+      password,
+    });
+
+    // Verifica que la respuesta contenga los datos esperados
+    if (response && response.data && response.data.access_token) {
+      const { access_token } = response.data;
+
+      // Decodificar el token para obtener el rol
+      const decodedToken = JSON.parse(atob(access_token.split('.')[1]));
+      const role = decodedToken.role; // Extraer el rol del token decodificado
+
+      // Guardar el usuario (token y rol) completo en localStorage
+      localStorage.setItem('user', JSON.stringify({
+        access_token,
+        role,
+      }));
+
+      setSuccessMessage('Inicio de sesión exitoso');
+
+      // Redirigir según el rol
+      if (role === 'profesor') {
+        navigate('/teacher'); // Redirige al dashboard del profesor
+      } else if (role === 'estudiante') {
+        navigate('/student'); // Redirige al dashboard del estudiante
       } else {
-        setErrorMessage('Respuesta del servidor no válida');
+        setErrorMessage('Rol no reconocido.');
       }
-    } catch (error) {
-      console.log('Error durante el login:', error);
-  
-      if (error.response) {
-        setErrorMessage(error.response.data.message || 'Error en el servidor');
-      } else if (error.request) {
-        setErrorMessage('No se recibió respuesta del servidor');
-      } else {
-        setErrorMessage('Error al realizar la solicitud');
-      }
-    } finally {
-      setIsLoading(false);
+    } else {
+      setErrorMessage('Respuesta del servidor no válida');
     }
-  };
+  } catch (error) {
+    if (error.response) {
+      setErrorMessage(error.response.data.message || 'Error en el servidor');
+    } else if (error.request) {
+      setErrorMessage('No se recibió respuesta del servidor');
+    } else {
+      setErrorMessage('Error al realizar la solicitud');
+    }
+  } finally {
+    setIsLoading(false);
+  }
+};
+
   
   
   
