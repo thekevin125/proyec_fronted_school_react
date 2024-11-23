@@ -19,13 +19,17 @@ const router = createBrowserRouter(
     {
       path: '/student/*',
       element: (
-        <ProtectedRoute role="estudiante" component={<StudentDashboard />} />
+        <ProtectedRoute expectedRole="estudiante">
+          <StudentDashboard />
+        </ProtectedRoute>
       ),
     },
     {
       path: '/teacher/*',
       element: (
-        <ProtectedRoute role="profesor" component={<TeacherDashboard />} />
+        <ProtectedRoute expectedRole="profesor">
+          <TeacherDashboard />
+        </ProtectedRoute>
       ),
     },
     {
@@ -39,13 +43,12 @@ function App() {
   const [userRole, setUserRole] = useState(null);
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user'));
+    const user = JSON.parse(localStorage.getItem('user')); // Asegúrate de guardar todo el objeto de usuario en localStorage
     if (user) {
-      setUserRole(user.role);
+      setUserRole(user.role); // Setea el rol al estado
     }
   }, []);
 
-  // Devuelve el RouterProvider que maneja las rutas
   return <RouterProvider router={router} />;
 }
 

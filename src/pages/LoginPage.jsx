@@ -32,15 +32,15 @@ function AuthPage() {
         password,
       });
   
-      console.log('Respuesta del servidor:', response.data);
-  
-      if (response.status === 200) {
+      // Verifica que la respuesta contenga los datos esperados
+      if (response && response.data && response.data.access_token) {
+        console.log('Respuesta del servidor:', response.data);
         const { access_token } = response.data;
   
         console.log('Token recibido:', access_token);
   
         // Decodificar el token para obtener el rol
-        const decodedToken = decodeToken(access_token);
+        const decodedToken = JSON.parse(atob(access_token.split('.')[1]));
         console.log('Token decodificado:', decodedToken);
   
         const role = decodedToken.role; // Extraer el rol del token decodificado
@@ -52,7 +52,7 @@ function AuthPage() {
   
         setSuccessMessage('Inicio de sesión exitoso');
   
-        // Redirige según el rol
+        // Redirigir según el rol
         if (role === 'profesor') {
           console.log('Redirigiendo a /teacher');
           navigate('/teacher'); // Redirige al dashboard del profesor
@@ -63,24 +63,25 @@ function AuthPage() {
           console.log('Rol no reconocido:', role);
           setErrorMessage('Rol no reconocido.');
         }
+      } else {
+        setErrorMessage('Respuesta del servidor no válida');
       }
     } catch (error) {
       console.log('Error durante el login:', error);
   
       if (error.response) {
-        console.log('Error del servidor:', error.response.data);
         setErrorMessage(error.response.data.message || 'Error en el servidor');
       } else if (error.request) {
-        console.log('No se recibió respuesta del servidor:', error.request);
-        setErrorMessage('Error al conectar con el servidor. Inténtalo más tarde.');
+        setErrorMessage('No se recibió respuesta del servidor');
       } else {
-        console.log('Error al realizar la solicitud:', error.message);
-        setErrorMessage('Error al realizar la solicitud.');
+        setErrorMessage('Error al realizar la solicitud');
       }
     } finally {
       setIsLoading(false);
     }
   };
+  
+  
   
 
 
