@@ -22,6 +22,7 @@ function Sidebar() {
         <Link to="/teacher/add-notes">Añadir Notas</Link>
         <Link to="/teacher/students">Estudiantes</Link>
       </nav>
+      
       <button className="logout-button" onClick={handleLogout}>
         Salir
       </button>

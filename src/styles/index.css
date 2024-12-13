@@ -136,12 +136,14 @@
   }
   
   .avatar-placeholder {
-    width: 80px;
-    height: 80px;
-    background-color: #ccc;
-    border-radius: 50%;
-    margin-bottom: 10px;
+    width: 100px; /* Tamaño del avatar */
+    height:100px;
+    border-radius: 50%; /* Hace que sea circular */
+    background-image: url('https://i01piccdn.sogoucdn.com/0332664a3c6099c8'); /* Reemplaza con la ruta de tu imagen */
+    background-size: cover;
+    background-position: center;
   }
+  
   
   .sidebar-menu {
     width: 100%;
@@ -171,4 +173,3 @@
   .logout-button:hover {
     background-color: #c00;
   }
-  

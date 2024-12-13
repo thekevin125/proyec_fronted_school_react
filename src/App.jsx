@@ -4,6 +4,8 @@ import LoginPage from './pages/LoginPage';
 import StudentDashboard from './pages/student/StudentDashboard';
 import TeacherDashboard from './pages/teacher/TeacherDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
+import AddNotes from './pages/teacher/AddNotes'; // Página de Añadir Notas
+import Students from './pages/teacher/Students'; // Página de Estudiantes
 
 // Definimos el router con las rutas principales
 const router = createBrowserRouter(
@@ -31,6 +33,11 @@ const router = createBrowserRouter(
           <TeacherDashboard />
         </ProtectedRoute>
       ),
+      children: [
+        { path: 'home', element: <h1>Bienvenido Profesor</h1> }, // Página de inicio
+        { path: 'add-notes', element: <AddNotes /> }, // Página para Añadir Notas
+        { path: 'students', element: <Students /> }, // Página para Estudiantes
+      ],
     },
     {
       path: '*',
