@@ -117,3 +117,8 @@
 1. Clona el repositorio:
    ```bash
    git clone <URL-del-repositorio>
+## correr proyect
+
+
+npm i 
+npm run dev
