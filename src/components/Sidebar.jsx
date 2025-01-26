@@ -1,14 +1,13 @@
-
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import './../../src/styles/index.css'; // Archivo CSS para estilos
+import './../../src/styles/index.css';
 
 function Sidebar() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem('user'); // Elimina los datos del usuario
-    navigate('/login'); // Redirige al login
+    localStorage.removeItem('user');
+    navigate('/login');
   };
 
   return (
@@ -22,7 +21,7 @@ function Sidebar() {
         <Link to="/teacher/add-notes">Añadir Notas</Link>
         <Link to="/teacher/students">Estudiantes</Link>
       </nav>
-      
+
       <button className="logout-button" onClick={handleLogout}>
         Salir
       </button>
